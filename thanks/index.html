@@ -106,22 +106,18 @@ function copyToClipboard(text){
   });
 }
 
+
 (function(){
-  /* 주문서 페이지가 localStorage에 저장하는 키.
-     ※ 폼 이름(curry-preorder)과는 다른 값이다.
-     프로젝트마다 키가 달라서 순서대로 찾는다. */
-  var KEYS = ["bcc30_last_order", "bcw20_last_order", "bcw_last_order", "bcc_last_order"];
-  
-  var raw = null, newest = 0;
-  for (var i = 0; i < KEYS.length; i++){
-    try {
-      var v = localStorage.getItem(KEYS[i]);
-      if (!v) continue;
-      var t = Date.parse(JSON.parse(v).at) || 0;
-      if (t >= newest) { newest = t; raw = v; }
-    } catch(e) {}
-  }
-  if (!raw) return; // 직접 접속 등으로 저장된 주문이 없으면 기본 화면 유지
+  /* 파르나스호텔 컬렉션 침구 주문서의 주문 완료 정보 */
+  var LAST_ORDER_KEY = "phc_bedding_last_order";
+
+  var raw = null;
+  try {
+    raw = localStorage.getItem(LAST_ORDER_KEY);
+  } catch(e) {}
+
+  if (!raw) return;
+
 
   var saved;
   try { saved = JSON.parse(raw); } catch(e) { return; }

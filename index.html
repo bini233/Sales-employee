@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>파르나스호텔 컬렉션 침구 특별 판매 주문서</title>
+
+<!-- 카카오(구 다음) 우편번호 서비스 : 무료 / API 키 불필요
+     아래 JS에서 CDN 후보를 순서대로 시도해 동적으로 로드합니다.
+     (사내망·광고차단기 등으로 막힐 경우 직접 입력 모드로 자동 전환) -->
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  :root{
+    --bg:#ffffff;
+    --panel:#ffffff;
+    --muted-bg:#f7f7f7;
+    --line:#e6e6e6;
+    --line-2:#f0f0f0;
+    --text:#111;
+    --subtext:#666;
+    --muted:#888;
+    --danger:#d33;
+  }
+
+  body{
+    font-family:'Pretendard','Noto Sans KR', sans-serif;
+    margin:0; padding:20px; background:var(--bg); color:var(--text);
+  }
+
+  .page-wrapper{
+    max-width:900px; width:100%; margin:0 auto; background:var(--panel);
+    padding:25px; border-radius:12px; border:1px solid var(--line);
+  }
+
+  h1{ text-align:center; font-size:1.5em; margin:6px 0 18px; line-height:1.4; word-break:keep-all; }
+  h2{ margin-top:34px; font-size:1.15em; padding-left:10px; border-left:3px solid var(--line); }
+  a{ color:inherit; text-decoration:underline; text-underline-offset:2px; }
+
+  /* 모바일 입력창 자동 확대 방지 : 모든 입력 타입에 16px 보장 */
+  input[type="text"], input[type="tel"], input[type="email"], input[type="number"], select {
+    font-size: 16px !important;
+  }
+  input[type="text"], input[type="tel"], input[type="email"]{
+    width:100%; padding:10px 0; border:none; border-bottom:1px solid var(--line);
+    background:transparent; color:var(--text); -webkit-appearance:none;
+  }
+  input[type="text"]:focus, input[type="tel"]:focus, input[type="email"]:focus{
+    border-bottom:1px solid var(--text); outline:none;
+  }
+  input[readonly]{ color:var(--subtext); }
+
+  label{ display:block; font-weight:500; margin:16px 0 6px; }
+  label.required::after{ content:" *"; color:var(--danger); font-weight:700; vertical-align:super; font-size:0.85em; }
+
+  .field-help{ margin-top:6px; font-size:0.88em; color:var(--subtext); line-height:1.5; }
+
+  .info-box{
+    text-align:center; margin:10px 0 14px; padding:16px;
+    border:1px solid var(--line); border-radius:12px; line-height:1.7; background:#fff;
+  }
+  .info-box .info-item{ margin:6px 0; color:var(--subtext); }
+  .info-box .info-item strong{ color:var(--text); font-weight:700; }
+  .info-box .info-sub{ margin-top:12px; padding-top:12px; border-top:1px solid var(--line-2); color:var(--subtext); font-size:0.95em; }
+
+  /* 주문번호 배지 */
+  .order-no-badge{
+    margin:0 0 14px; padding:10px 14px; border:1px solid var(--line); border-radius:12px;
+    background:var(--muted-bg); font-size:0.95em; color:var(--subtext); text-align:center;
+  }
+  .copyable{
+    font:inherit; color:var(--text); font-weight:900; letter-spacing:0.4px;
+    background:#fff; border:1px solid var(--line); border-radius:10px; padding:6px 12px;
+    cursor:pointer; -webkit-user-select:all; user-select:all;
+  }
+  .copyable:hover{ border-color:var(--text); }
+  .copyable:active{ transform:translateY(1px); }
+  .copyable.copied{ border-color:var(--text); background:var(--text); color:#fff; }
+  .copy-hint{ margin-top:6px; font-size:0.9em; }
+
+  /* 직전 주문 */
+  .last-order{
+    margin:0 0 18px; padding:16px; border:1px solid var(--line); border-radius:12px;
+    background:var(--muted-bg); line-height:1.6; text-align:center;
+  }
+  .last-order .lo-title{ font-weight:900; margin-bottom:8px; }
+  .last-order pre{
+    margin:8px 0 0; white-space:pre-wrap; word-break:break-all;
+    font-family:inherit; font-size:0.95em; color:var(--subtext); text-align:center;
+  }
+  .last-order .lo-close{
+    margin-top:12px; border:1px solid var(--line); border-radius:12px; background:#fff;
+    padding:8px 12px; cursor:pointer;
+  }
+  .last-order .lo-close:hover{ border-color:var(--text); }
+
+  /* 상품 안내: 큰 이미지 + 썸네일 / 상세 구성 + 장바구니 */
+  .offer-card{ border:1px solid var(--line); border-radius:12px; padding:16px; margin-top:12px; background:#fff; }
+  .offer-layout{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:22px; align-items:start; }
+  @media (max-width: 720px){
+    .offer-layout{ grid-template-columns:1fr; gap:16px; }
+  }
+
+  /* 이미지 갤러리 */
+  .offer-visual{ min-width:0; }
+  .offer-track{
+    display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
+    border-radius:12px; background:var(--muted-bg);
+    scrollbar-width:none; -ms-overflow-style:none;
+  }
+  .offer-track::-webkit-scrollbar{ display:none; }
+  .offer-track img{
+    flex:0 0 100%; width:100%; aspect-ratio:1/1; object-fit:cover;
+    scroll-snap-align:center; display:block; user-select:none;
+  }
+  .offer-thumbs{ display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
+  .offer-thumbs button{
+    width:64px; height:64px; border:2px solid transparent; background:var(--muted-bg);
+    border-radius:8px; padding:0; overflow:hidden; cursor:pointer;
+  }
+  .offer-thumbs button.on{ border-color:#2e4356; }
+  .offer-thumbs img{ display:block; width:100%; height:100%; object-fit:cover; }
+  .offer-thumbs button:focus-visible{ outline:2px solid #2e4356; outline-offset:2px; }
+  @media (max-width:720px){ .offer-thumbs button{ width:58px; height:58px; } }
+
+  /* 상품 정보 */
+  .offer-brand{ font-size:0.9em; color:var(--subtext); margin-bottom:6px; }
+  .offer-title{ font-weight:900; font-size:1.15em; line-height:1.4; margin-bottom:6px; word-break:keep-all; }
+  .offer-lead{ color:var(--subtext); font-size:0.95em; margin-bottom:12px; }
+  .offer-price{ padding:12px 0; margin:10px 0; border-top:1px solid var(--line-2); border-bottom:1px solid var(--line-2); line-height:1.5; }
+  .offer-price .rate{ font-weight:900; margin-right:8px; }
+  .offer-price .msrp{ color:var(--muted); text-decoration:line-through; font-size:0.95em; }
+  .offer-price .final{ display:block; margin-top:4px; font-weight:900; font-size:1.5em; }
+  .offer-price .unit{ margin-top:6px; color:var(--subtext); font-size:0.92em; }
+  .limited-note{ margin:14px 0 0; padding:13px 16px; border:1px solid var(--line); border-radius:12px; background:var(--muted-bg); color:var(--subtext); line-height:1.6; font-size:0.95em; }
+  .limited-note strong{ color:var(--text); }
+  .offer-description{ font-size:0.93em; color:var(--subtext); line-height:1.65; margin:10px 0 14px; word-break:keep-all; }
+  .composition-title{ font-weight:800; margin-top:10px; font-size:0.95em; }
+  .composition-list{ margin:8px 0 14px; padding-left:20px; line-height:1.7; color:var(--text); font-size:0.92em; }
+  .composition-list li{ padding-bottom:4px; }
+  .offer-purchase{ background:var(--muted-bg); border:1px solid var(--line); border-radius:10px; padding:12px; margin-top:14px; }
+  .offer-purchase .qty-stepper-inline{ margin:0; }
+  .offer-purchase .qty-amount{ font-size:1.05em; }
+  .cart-add{ width:100%; margin-top:12px; padding:13px 16px; background:#2e4356; color:#fff; border:none; border-radius:9px; cursor:pointer; font-weight:800; font-size:1em; }
+  .cart-add:hover{ background:#1d3144; }
+  .cart-feedback{ min-height:20px; margin-top:6px; font-size:0.84em; color:var(--subtext); }
+  .cart-section{ margin-top:20px; padding:16px; border:1px solid var(--line); background:var(--muted-bg); border-radius:12px; }
+  .cart-title{ font-weight:900; margin-bottom:9px; }
+  .cart-line{ display:flex; gap:10px; justify-content:space-between; align-items:center; padding:10px 0; border-top:1px solid var(--line); }
+  .cart-line .cart-qty{ color:var(--subtext); font-size:0.9em; }
+  .cart-line strong{ white-space:nowrap; }
+  .cart-remove{ font-size:0.83em; border:1px solid var(--line); border-radius:7px; background:#fff; padding:4px 8px; cursor:pointer; }
+  .cart-empty{ color:var(--subtext); font-size:0.91em; padding:5px 0; }
+
+  .spec-list{ margin:12px 0 0; }
+  .spec-list div{
+    display:flex; gap:12px; padding:9px 0; border-bottom:1px solid var(--line-2);
+    font-size:0.95em; line-height:1.6;
+  }
+  .spec-list div:last-child{ border-bottom:none; }
+  .spec-list dt{ flex:0 0 84px; color:var(--subtext); margin:0; }
+  .spec-list dd{ flex:1; margin:0; word-break:keep-all; }
+
+  /* 배송 정보는 한 곳만 입력 */
+  .dest-slot{ border:1px solid var(--line); border-radius:12px; padding:16px; margin-top:12px; background:#fff; }
+
+  .qty-stepper-inline{ display:flex; align-items:center; gap:10px; margin-top:6px; flex-wrap:wrap; }
+  .qty-btn{
+    width:42px; height:42px; border:1px solid var(--line); border-radius:12px;
+    background:#fff; color:var(--text); font-size:20px; cursor:pointer;
+  }
+  .qty-btn:hover{ border-color:var(--text); }
+  .qty-btn:active{ transform:translateY(1px); }
+  .qty-stepper-inline .qty-input{
+    width:84px; padding:10px 0; border:1px solid var(--line); border-radius:12px;
+    text-align:center; background:#fff;
+  }
+  .qty-amount{ margin-left:auto; font-weight:800; color:var(--text); }
+
+  /* 주소 검색 */
+  .addr-row{ display:flex; gap:10px; align-items:center; }
+  .addr-row input{ flex:1; min-width:0; }
+  .addr-search-btn{
+    flex:0 0 auto; border:1px solid var(--text); border-radius:12px; background:#fff;
+    color:var(--text); padding:11px 16px; font-size:15px; font-weight:700; cursor:pointer; white-space:nowrap;
+  }
+  .addr-search-btn:hover{ background:var(--text); color:#fff; }
+
+  .addr-alert{
+    display:none; margin-top:10px; padding:12px 14px; border:1px solid var(--danger);
+    border-radius:12px; color:var(--danger); background:#fff; line-height:1.6; font-size:0.95em;
+  }
+  .addr-alert.show{ display:block; }
+  .addr-notice{
+    display:none; margin-top:10px; padding:12px 14px; border:1px solid var(--line);
+    border-radius:12px; background:var(--muted-bg); color:var(--subtext); line-height:1.6; font-size:0.95em;
+  }
+  .addr-notice.show{ display:block; }
+
+  .postcode-dim{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1000; }
+  .postcode-dim.show{ display:block; }
+  .postcode-layer{
+    position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:min(500px, calc(100vw - 32px)); background:#fff; border:1px solid var(--line);
+    border-radius:12px; overflow:hidden; z-index:1001;
+  }
+  .postcode-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 14px; border-bottom:1px solid var(--line); font-weight:900;
+  }
+  .postcode-head button{ border:1px solid var(--line); border-radius:10px; background:#fff; padding:6px 12px; font-size:15px; cursor:pointer; }
+  #postcodeEmbed{ height:min(460px, calc(100vh - 160px)); }
+  #postcodeEmbed iframe{ width:100% !important; height:100% !important; border:0; }
+
+  /* 합계 */
+  .total-box{
+    margin-top:16px; padding:16px; background:var(--muted-bg); border-radius:12px;
+    border:1px solid var(--line); line-height:1.7;
+  }
+  .total-box .total-line{ display:flex; justify-content:space-between; align-items:baseline; color:var(--subtext); font-size:0.95em; }
+  .total-box .total-final{
+    display:flex; justify-content:space-between; align-items:baseline; margin-top:8px;
+    padding-top:8px; border-top:1px solid var(--line); font-weight:900; font-size:1.1em; color:var(--text);
+  }
+
+  .pay-highlight{
+    margin-top:12px; padding:14px 16px; background:var(--muted-bg);
+    border:1px solid var(--line); border-radius:12px; color:var(--text); line-height:1.6;
+  }
+  .pay-highlight .pay-note{ margin-top:6px; font-size:0.92em; color:var(--subtext); }
+
+  /* 개인정보 동의 */
+  .consent-box{ margin-top:28px; padding:16px; background:var(--muted-bg); border:1px solid var(--line); border-radius:12px; line-height:1.65; }
+  .consent-title{ font-weight:900; margin-bottom:10px; }
+  .consent-section{ padding-top:12px; margin-top:12px; border-top:1px solid var(--line-2); }
+  .consent-section:first-child{ border-top:none; margin-top:0; padding-top:0; }
+  .consent-subtitle{ font-weight:800; margin-bottom:6px; }
+  .consent-list{ margin:0; padding-left:18px; color:var(--subtext); font-size:0.95em; }
+  .consent-check{ display:flex; gap:10px; align-items:flex-start; margin-top:10px; padding-top:8px; }
+  .consent-check input[type="checkbox"]{ margin-top:4px; width:18px; height:18px; accent-color:var(--text); }
+  .consent-check label{ margin:0; font-weight:800; }
+  .consent-required{ font-size:0.9em; color:var(--subtext); margin-top:6px; }
+
+  button[type="submit"]{
+    width:100%; padding:18px; background:var(--text); color:#fff; border:1px solid var(--text);
+    border-radius:12px; margin-top:30px; cursor:pointer; font-size:1.3em; font-weight:800;
+  }
+  button[type="submit"]:hover{ background:#fff; color:var(--text); }
+  button[type="submit"]:disabled{ background:#bbb; border-color:#bbb; color:#fff; cursor:not-allowed; }
+</style>
+</head>
+
+<body>
+<div class="page-wrapper">
+
+  <h1>임직원 대상 파르나스호텔 컬렉션 한정 수량 이벤트</h1>
+
+  <div class="last-order" id="lastOrderBox" style="display:none;">
+    <div class="lo-title">이 기기에서 접수된 직전 주문</div>
+    <button type="button" class="copyable" id="lastOrderNo" data-copy="">-</button>
+    <pre id="lastOrderText"></pre>
+    <button type="button" class="lo-close" id="lastOrderClose">닫기</button>
+  </div>
+
+  <div class="info-box">
+    <!-- TODO: 판매 기간 및 발송 시작일 확정 시 이 영역에 추가 -->
+    <div class="info-item"><strong>판매 안내</strong> : 침구 세트 및 베개 세트는 각각 한정 수량으로 판매됩니다.</div>
+    <div class="info-item"><strong>문의</strong> : 신사업팀 이혜빈 (02-559-7594 / <a href="mailto:newbiz@parnas.co.kr">newbiz@parnas.co.kr</a>)</div>
+
+    <div class="info-sub">
+      <div class="info-item"><strong>구매 방법</strong></div>
+      <div class="info-item">아래 주문서를 작성 후 제출해주세요.</div>
+
+      <div class="info-item" style="margin-top:10px;"><strong>결제 방법</strong></div>
+      <div class="info-item">주문서 확인 후 주말 및 공휴일을 제외한 다음 영업일 내 입력 연락처로 결제 링크가 포함된 안내 문자가 발송됩니다.</div>
+
+      <div class="info-item" style="margin-top:10px;"><strong>배송 안내</strong></div>
+      <div class="info-item">✓ 결제 완료 후 배송이 진행되며, 상세 일정은 별도로 안내됩니다.</div>
+      <div class="info-item">✓ 배송 일정 및 비용은 주문 확인 시 안내될 수 있습니다.</div>
+    </div>
+  </div>
+
+  <div class="order-no-badge">
+    주문번호 <button type="button" class="copyable" id="orderNoView" data-copy="">-</button>
+    <div class="copy-hint">탭하면 주문번호가 복사됩니다.<br>문의 시 이 번호를 알려주세요.</div>
+  </div>
+
+  <form id="orderForm"
+        name="bedding-limited-order"
+        method="POST"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        action="/thanks/">
+
+    <input type="hidden" name="form-name" value="bedding-limited-order" />
+    <p style="display:none;"><label>Don't fill this out: <input name="bot-field" /></label></p>
+
+    <h2>1. 주문자 정보</h2>
+    <label class="required">주문자 이름</label>
+    <input type="text" name="주문자 이름" id="buyerName" placeholder="예시: 홍길동" required>
+
+    <label class="required">주문자 이메일</label>
+    <input type="email" name="주문자 이메일" id="buyerEmail" inputmode="email" autocomplete="email" placeholder="예시: hong@email.com" required>
+    <div class="field-help">임직원 확인 및 주문 관련 안내 발송에 사용됩니다. 사내 이메일로 입력해주세요.</div>
+
+    <h2>2. 한정 수량 판매 상품</h2>
+    <div class="limited-note"><strong>한정 수량 안내</strong> · 본 프로모션 상품은 한정 수량으로 판매되며, 준비된 수량 소진 시 조기 마감될 수 있습니다.</div>
+    <div class="offer-card">
+      <div class="offer-layout">
+
+        <!-- 이미지 교체: assets/bedding1.png ~ bedding3.png -->
+        <div class="offer-visual" data-product="bedding">
+          <div class="offer-track">
+            <img data-src="./assets/Duvet_K.png" alt="침구세트 이미지 1">
+            <img data-src="./assets/Pillow_King.png" alt="침구세트 이미지 2">
+            <img data-src="./assets/package.png" alt="침구세트 이미지 3">
+          </div>
+          <div class="offer-thumbs" aria-label="침구 세트 이미지 선택"></div>
+        </div>
+
+        <div class="offer-info">
+          <div class="offer-brand">파르나스호텔 컬렉션</div>
+          <div class="offer-title">구스다운 침구 세트</div>
+          <div class="offer-lead">구스다운 킹사이즈 이불 세트 1개 + 구스다운 킹사이즈 베개 세트 2개</div>
+
+          <!-- ▼ 상품 소개 문구 직접 수정 ▼ -->
+          <div class="offer-description">그랜드 인터컨티넨탈 서울 파르나스의 객실 기준을 준용하되, 그레이 파이핑 디테일과 히든 지퍼를 적용해 가정에서의 사용과 관리가 한층 더 편리하도록 리뉴얼했습니다.</div>
+          <div class="composition-title">상품 구성</div>
+          <ul class="composition-list">
+            <li>킹사이즈 이불 세트: 220x240cm, 1,200g</li>
+            <li>구스다운 이불 1개: 폴란드산 구스(솜털 90%, 깃털 10%), 다운프루프</li>
+            <li>이불 커버 1개: 100수, 순면 사틴 원단</li>
+            <li>킹사이즈 베개 세트: 50x70cm, 1,000g</li>
+            <li>구스다운 베개 2개: 폴란드산 구스(솜털 50%, 깃털 50%), 이중 다운프루프</li>
+            <li>베개 커버 2개: 100수, 순면 사틴 원단</li>
+            <li>호텔 자수가 새겨진 보관용 패브릭 패키지에 담겨 제공됩니다.</li>
+          </ul>
+          <!-- ▲ 상품 소개 / 구성 수정 영역 ▲ -->
+
+          <div class="offer-price">
+            <span class="rate">45% 할인</span><span class="msrp">2,540,000원</span>
+            <span class="final">1,397,000원</span>
+            <div class="unit">VAT포함</div>
+          </div>
+
+          <div class="offer-purchase">
+            <div class="qty-stepper-inline">
+              <button type="button" class="qty-btn" data-pick="minus" data-product="bedding" aria-label="침구 세트 수량 감소">−</button>
+              <input type="text" class="qty-input" id="pickBeddingQty" aria-label="침구 세트 선택 수량" inputmode="numeric" pattern="[0-9]*" value="1">
+              <button type="button" class="qty-btn" data-pick="plus" data-product="bedding" aria-label="침구 세트 수량 증가">＋</button>
+              <span class="qty-amount" id="pickBeddingAmount">1,397,000원</span>
+            </div>
+          </div>
+          <button type="button" class="cart-add" data-add-product="bedding">장바구니 담기</button>
+          <div class="cart-feedback" id="feedbackBedding" role="status" aria-live="polite"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="offer-card">
+      <div class="offer-layout">
+        <!-- 이미지 교체: assets/pillow1.png ~ pillow3.png -->
+        <div class="offer-visual" data-product="pillow">
+          <div class="offer-track">
+            <img data-src="./assets/Pillow_King.png" alt="베개세트 이미지 1">
+            <img data-src="./assets/package.png" alt="베개세트 이미지 2">
+          </div>
+          <div class="offer-thumbs" aria-label="베개 세트 이미지 선택"></div>
+        </div>
+
+        <div class="offer-info">
+          <div class="offer-brand">파르나스호텔 컬렉션</div>
+          <div class="offer-title">구스다운 베개 세트</div>
+          <div class="offer-lead">구스다운 킹사이즈 베개 세트 1개</div>
+
+          <!-- ▼ 상품 소개 문구 직접 수정 ▼ -->
+          <div class="offer-description">그랜드 인터컨티넨탈 서울 파르나스의 객실 기준을 준용하되, 그레이 파이핑 디테일과 히든 지퍼를 적용해 가정에서의 사용과 관리가 한층 더 편리하도록 리뉴얼했습니다.</div>
+          <div class="composition-title">상품 구성</div>
+          <ul class="composition-list">
+            <li>킹사이즈 베개 세트: 50x70cm, 1,000g</li>
+            <li>구스다운 베개 1개: 폴란드산 구스(솜털 50%, 깃털 50%), 이중 다운프루프</li>
+            <li>베개 커버 1개: 100수, 순면 사틴 원단</li>
+            <li>호텔 자수가 새겨진 보관용 패브릭 패키지에 담겨 제공됩니다.</li>
+          </ul>
+          <!-- ▲ 상품 소개 / 구성 수정 영역 ▲ -->
+
+          <div class="offer-price">
+            <span class="rate">35% 할인</span><span class="msrp">395,000원</span>
+            <span class="final">256,750원</span>
+            <div class="unit">VAT 포함</div>
+          </div>
+
+          <div class="offer-purchase">
+            <div class="qty-stepper-inline">
+              <button type="button" class="qty-btn" data-pick="minus" data-product="pillow" aria-label="베개 세트 수량 감소">−</button>
+              <input type="text" class="qty-input" id="pickPillowQty" aria-label="베개 세트 선택 수량" inputmode="numeric" pattern="[0-9]*" value="1">
+              <button type="button" class="qty-btn" data-pick="plus" data-product="pillow" aria-label="베개 세트 수량 증가">＋</button>
+              <span class="qty-amount" id="pickPillowAmount">256,750원</span>
+            </div>
+          </div>
+          <button type="button" class="cart-add" data-add-product="pillow">장바구니 담기</button>
+          <div class="cart-feedback" id="feedbackPillow" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cart-section" id="cartSection">
+      <div class="cart-title">장바구니 · 주문 상품</div>
+      <div id="cartRows"><div class="cart-empty">상품을 선택하고 '장바구니 담기'를 눌러주세요.</div></div>
+    </div>
+
+    <h2>3. 배송 정보</h2>
+
+    <div id="destWrap">
+      <div class="dest-slot">
+        <label class="required">수취인 이름</label>
+        <input type="text" name="수취인 이름" id="recipientName" placeholder="예시: 홍길동">
+        <label class="required">수취인 전화번호</label>
+        <input type="tel" name="수취인 연락처" id="recipientPhone" class="phone-input" inputmode="numeric" pattern="[0-9\-]*" maxlength="13" placeholder="예시: 010-1234-5678">
+        <label class="required">수취인 주소</label>
+        <div class="addr-row">
+          <input type="text" name="수취인 우편번호" id="recipientZip" inputmode="numeric" placeholder="우편번호" readonly>
+          <button type="button" class="addr-search-btn" id="addrSearch">주소 찾기</button>
+        </div>
+        <input type="text" name="수취인 주소" id="recipientAddr" placeholder="주소 찾기 버튼을 눌러주세요" readonly style="margin-top:10px;">
+        <input type="text" name="수취인 상세주소" id="recipientDetail" placeholder="상세주소 (동/호수 등)" style="margin-top:10px;">
+      </div>
+
+    </div>
+    <div class="addr-notice" id="addrNotice">
+      주소 검색 서비스에 연결하지 못했습니다. 우편번호와 주소를 직접 입력해주세요.
+    </div>
+
+    <div class="total-box">
+      <div class="total-line"><span>총 수량</span><span><span id="totalQty">0</span>세트</span></div>
+      <div class="total-line"><span>침구 세트</span><span><span id="totalBeddingQty">0</span>세트</span></div>
+      <div class="total-line"><span>베개 세트</span><span><span id="totalPillowQty">0</span>세트</span></div>
+      <div class="total-final"><span>총 결제 예정 금액</span><span><span id="grandTotal">0</span>원</span></div>
+    </div>
+
+    <h2>4. 결제 방식</h2>
+    <div class="pay-highlight">
+      주문서 확인 후 주말 및 공휴일을 제외한 다음 영업일 내 입력해주신 연락처로 결제 링크가 포함된 안내 문자가 발송됩니다.
+      <div class="pay-note">※ 문자는 02-559-5656 번호로 발송됩니다.<br>※ 결제 링크를 받은 다음 영업일까지 결제가 완료되지 않으면 주문이 자동 취소됩니다.<br>※ 한정 수량 상품으로, 주문 접수 후 재고 확인 과정에서 주문이 취소될 수 있습니다.</div>
+    </div>
+
+    <label class="required">결제 링크 받으실 전화번호</label>
+    <input type="tel" name="카드결제 연락처" id="payPhone" class="phone-input" inputmode="numeric" pattern="[0-9\-]*" maxlength="13" placeholder="예시: 010-1234-5678" required>
+
+    <input type="hidden" name="주문번호" id="orderNoInput">
+    <input type="hidden" name="총 수량" id="totalQtyInput">
+    <input type="hidden" name="침구세트 총 수량" id="totalBeddingInput">
+    <input type="hidden" name="베개세트 총 수량" id="totalPillowInput">
+    <input type="hidden" name="주문 내역" id="orderSummaryInput">
+    <input type="hidden" name="총액" id="totalAmountInput">
+
+    <div class="consent-box">
+      <div class="consent-title">개인정보 동의</div>
+
+      <div class="consent-section">
+        <div class="consent-subtitle">1) 개인정보 수집 및 이용 동의</div>
+        <ul class="consent-list">
+          <li>수집하는 개인정보 항목: 주문자 이름, 주문자 이메일, 수취인 이름, 수취인 연락처, 수취인 주소, 카드결제 연락처</li>
+          <li>수집 및 이용 목적: 침구 상품 주문 확인, 주문 취합 및 관련 안내, 결제 링크 발송 및 배송</li>
+          <li>보유 및 이용기간: 배송 완료 후 1개월간 보관 후 폐기</li>
+        </ul>
+        <div class="consent-check">
+          <input type="checkbox" id="agreeCollect" name="개인정보 수집 및 이용 동의" required>
+          <label for="agreeCollect">개인정보 수집 및 이용에 동의합니다. (필수)</label>
+        </div>
+      </div>
+
+      <!-- TODO: 배송업체 등 제3자 제공이 발생하는 경우, 실제 수령업체 및 제공 항목을 확인해 별도 동의 영역 추가 -->
+      <div class="consent-required">※ 필수 동의 항목에 체크해야 주문서 제출이 가능합니다.</div>
+    </div>
+
+    <button type="submit" id="submitBtn">주문서 제출하기</button>
+  </form>
+</div>
+
+<div class="postcode-dim" id="postcodeDim"></div>
+<div class="postcode-layer" id="postcodeLayer" style="display:none;">
+  <div class="postcode-head">
+    <span>주소 검색</span>
+    <button type="button" id="postcodeClose">닫기</button>
+  </div>
+  <div id="postcodeEmbed"></div>
+</div>
+
+<script>
+/* =========================================================
+   상품 / 가격 / 수량
+   상품별 행사 전체 재고: 각 10세트. 정적 HTML만으로는 타 주문의
+   동시 재고 차감을 할 수 없어 접수 전 서버/관리자 확인이 필요합니다.
+========================================================= */
+const PRODUCTS = {
+  bedding: { label:"침구 세트", msrp:2540000, discount:0.45, max:10 },
+  pillow:  { label:"베개 세트", msrp:395000,  discount:0.35, max:10 }
+};
+Object.values(PRODUCTS).forEach(p => { p.price = Math.round(p.msrp * (1 - p.discount)); });
+
+const ORDER_NO_KEY   = "phc_bedding_order_no";
+const LAST_ORDER_KEY = "phc_bedding_last_order";
+
+/* =========================================================
+   두 상품 이미지 슬라이더
+   assets/bedding1~3.png, assets/pillow1~3.png 교체 가능
+========================================================= */
+function initSlider(visual){
+  const track = visual.querySelector(".offer-track");
+  const imgs = [...track.querySelectorAll("img")];
+  const thumbs = visual.querySelector(".offer-thumbs");
+  const productName = visual.dataset.product === "bedding" ? "BEDDING SET" : "PILLOW SET";
+
+  const dummy = (n) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">' +
+    '<rect width="800" height="800" fill="#f0efec"/>' +
+    '<rect x="60" y="60" width="680" height="680" fill="none" stroke="#dcd8d2" stroke-width="2" stroke-dasharray="10 10"/>' +
+    '<text x="400" y="370" text-anchor="middle" font-family="sans-serif" font-size="40" fill="#b5aea6">' + productName + '</text>' +
+    '<text x="400" y="450" text-anchor="middle" font-family="sans-serif" font-size="26" fill="#c7c1b9">SAMPLE ' + n + '</text>' +
+    '</svg>'
+  );
+
+  let idx = 0;
+  const buttons = [];
+  function sync(){
+    buttons.forEach((button, i) => {
+      button.classList.toggle("on", i === idx);
+      button.setAttribute("aria-pressed", i === idx ? "true" : "false");
+    });
+  }
+  function go(i){
+    idx = Math.max(0, Math.min(imgs.length - 1, i));
+    track.scrollTo({ left: track.clientWidth * idx, behavior: "smooth" });
+    sync();
+  }
+
+  imgs.forEach((im, i) => {
+    const placeholder = dummy(i + 1);
+    im.onerror = function(){ im.onerror = null; im.src = placeholder; };
+    im.src = im.dataset.src;
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.setAttribute("aria-label", productName + " 이미지 " + (i + 1));
+    const thumb = document.createElement("img");
+    thumb.alt = "";
+    thumb.onerror = function(){ thumb.onerror = null; thumb.src = placeholder; };
+    thumb.src = im.dataset.src;
+    button.appendChild(thumb);
+    button.addEventListener("click", () => go(i));
+    thumbs.appendChild(button);
+    buttons.push(button);
+  });
+
+  let timer = null;
+  track.addEventListener("scroll", function(){
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      idx = Math.max(0, Math.min(imgs.length - 1, Math.round(track.scrollLeft / track.clientWidth)));
+      sync();
+    }, 80);
+  });
+  sync();
+}
+document.querySelectorAll(".offer-visual").forEach(initSlider);
+
+/* =========================================================
+   주문번호 : 탭 단위로 1개만 발급 (새로고침해도 유지)
+========================================================= */
+function makeOrderNo(){
+  const d = new Date();
+  const ymd = d.getFullYear().toString().slice(2)
+    + String(d.getMonth()+1).padStart(2,"0")
+    + String(d.getDate()).padStart(2,"0");
+  const rand = Math.random().toString(36).slice(2,6).toUpperCase();
+  return `PHB-${ymd}-${rand}`;
+}
+
+function getOrderNo(){
+  let no = null;
+  try { no = sessionStorage.getItem(ORDER_NO_KEY); } catch(e){}
+  if(!no){
+    no = makeOrderNo();
+    try { sessionStorage.setItem(ORDER_NO_KEY, no); } catch(e){}
+  }
+  return no;
+}
+
+const orderNo = getOrderNo();
+document.getElementById("orderNoView").textContent = orderNo;
+document.getElementById("orderNoView").dataset.copy = orderNo;
+document.getElementById("orderNoInput").value = orderNo;
+
+function copyToClipboard(text){
+  if (navigator.clipboard && window.isSecureContext){
+    return navigator.clipboard.writeText(text);
+  }
+  return new Promise((resolve, reject) => {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.top = "-1000px";
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    ok ? resolve() : reject(new Error("copy failed"));
+  });
+}
+
+function bindCopy(el){
+  if (!el) return;
+  el.addEventListener("click", function(){
+    const text = el.dataset.copy || el.textContent.trim();
+    if (!text || text === "-") return;
+    const original = el.textContent;
+    copyToClipboard(text).then(() => {
+      el.textContent = "복사됨";
+      el.classList.add("copied");
+      setTimeout(() => { el.textContent = original; el.classList.remove("copied"); }, 1200);
+    }).catch(() => {
+      prompt("아래 주문번호를 길게 눌러 복사해주세요.", text);
+    });
+  });
+}
+bindCopy(document.getElementById("orderNoView"));
+
+/* 직전 주문 내역 표시 (같은 브라우저 한정) */
+(function showLastOrder(){
+  let raw = null;
+  try { raw = localStorage.getItem(LAST_ORDER_KEY); } catch(e){}
+  if(!raw) return;
+  try{
+    const saved = JSON.parse(raw);
+    const btn = document.getElementById("lastOrderNo");
+    btn.textContent = saved.orderNo;
+    btn.dataset.copy = saved.orderNo;
+    bindCopy(btn);
+    document.getElementById("lastOrderText").textContent =
+      `접수일시: ${saved.at}\n\n${saved.summary.replace(/^주문번호:.*\n?/, "").trim()}`;
+    document.getElementById("lastOrderBox").style.display = "block";
+  }catch(e){}
+})();
+
+document.getElementById("lastOrderClose").addEventListener("click", ()=>{
+  document.getElementById("lastOrderBox").style.display = "none";
+});
+
+/* =========================================================
+   상품별 선택 수량과 장바구니
+   상품 카드에서 담은 수량만 실제 주문에 반영합니다.
+========================================================= */
+const cart = { bedding:0, pillow:0 };
+
+function pickerInput(product){
+  return document.getElementById(product === "bedding" ? "pickBeddingQty" : "pickPillowQty");
+}
+function pickerAmount(product){
+  return document.getElementById(product === "bedding" ? "pickBeddingAmount" : "pickPillowAmount");
+}
+function pickerFeedback(product){
+  return document.getElementById(product === "bedding" ? "feedbackBedding" : "feedbackPillow");
+}
+function getPickerQty(product){
+  const n = parseInt(pickerInput(product).value, 10);
+  return Math.max(1, Math.min(PRODUCTS[product].max, Number.isFinite(n) ? n : 1));
+}
+function setPickerQty(product, qty){
+  const n = Math.max(1, Math.min(PRODUCTS[product].max, qty || 1));
+  pickerInput(product).value = n;
+  pickerAmount(product).textContent = (n * PRODUCTS[product].price).toLocaleString() + "원";
+}
+
+function recalcTotal(){
+  const totals = { ...cart };
+  const totalQty = totals.bedding + totals.pillow;
+  const grand = totals.bedding * PRODUCTS.bedding.price + totals.pillow * PRODUCTS.pillow.price;
+  document.getElementById("totalQty").textContent = totalQty;
+  document.getElementById("totalBeddingQty").textContent = totals.bedding;
+  document.getElementById("totalPillowQty").textContent = totals.pillow;
+  document.getElementById("grandTotal").textContent = grand.toLocaleString();
+  document.getElementById("totalBeddingInput").value = totals.bedding;
+  document.getElementById("totalPillowInput").value = totals.pillow;
+  document.getElementById("totalQtyInput").value = totalQty;
+  document.getElementById("totalAmountInput").value = grand;
+  return { totalQty, grand, totals };
+}
+
+function renderCart(){
+  const wrap = document.getElementById("cartRows");
+  wrap.innerHTML = "";
+  let hasProduct = false;
+  for (const product of Object.keys(PRODUCTS)){
+    const qty = cart[product];
+    if (!qty) continue;
+    hasProduct = true;
+    const row = document.createElement("div");
+    row.className = "cart-line";
+    const detail = document.createElement("div");
+    const title = document.createElement("div");
+    title.textContent = PRODUCTS[product].label;
+    const description = document.createElement("div");
+    description.className = "cart-qty";
+    description.textContent = qty + "세트 × " + PRODUCTS[product].price.toLocaleString() + "원";
+    detail.append(title, description);
+    const amount = document.createElement("strong");
+    amount.textContent = (qty * PRODUCTS[product].price).toLocaleString() + "원";
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "cart-remove";
+    remove.textContent = "삭제";
+    remove.setAttribute("aria-label", PRODUCTS[product].label + " 장바구니에서 삭제");
+    remove.addEventListener("click", () => {
+      cart[product] = 0;
+      pickerFeedback(product).textContent = "";
+      renderCart();
+    });
+    row.append(detail, amount, remove);
+    wrap.appendChild(row);
+  }
+  if (!hasProduct){
+    const empty = document.createElement("div");
+    empty.className = "cart-empty";
+    empty.textContent = "상품을 선택하고 '장바구니 담기'를 눌러주세요.";
+    wrap.appendChild(empty);
+  }
+  recalcTotal();
+}
+
+document.querySelectorAll("[data-pick]").forEach(button => {
+  button.addEventListener("click", () => {
+    const product = button.dataset.product;
+    const change = button.dataset.pick === "plus" ? 1 : -1;
+    setPickerQty(product, getPickerQty(product) + change);
+  });
+});
+document.querySelectorAll(".offer-purchase .qty-input").forEach(input => {
+  const product = input.id === "pickBeddingQty" ? "bedding" : "pillow";
+  input.addEventListener("input", () => {
+    input.value = input.value.replace(/[^0-9]/g, "");
+    const n = Math.max(0, parseInt(input.value, 10) || 0);
+    pickerAmount(product).textContent = (n * PRODUCTS[product].price).toLocaleString() + "원";
+  });
+  input.addEventListener("blur", () => setPickerQty(product, getPickerQty(product)));
+  input.addEventListener("focus", () => input.select());
+});
+document.querySelectorAll("[data-add-product]").forEach(button => {
+  button.addEventListener("click", () => {
+    const product = button.dataset.addProduct;
+    const qty = getPickerQty(product);
+    if (cart[product] + qty > PRODUCTS[product].max){
+      pickerFeedback(product).textContent = "한정 판매 수량을 초과했습니다. 수량을 조정해주세요.";
+      return;
+    }
+    cart[product] += qty;
+    pickerFeedback(product).textContent = qty + "세트를 장바구니에 담았습니다.";
+    setPickerQty(product, qty);
+    renderCart();
+  });
+});
+Object.keys(PRODUCTS).forEach(product => setPickerQty(product, 1));
+renderCart();
+
+/* =========================================================
+   카카오(구 다음) 우편번호 서비스
+========================================================= */
+const addrNoticeEl = document.getElementById("addrNotice");
+const pcLayer = document.getElementById("postcodeLayer");
+const pcDim   = document.getElementById("postcodeDim");
+const pcEmbed = document.getElementById("postcodeEmbed");
+
+const POSTCODE_URLS = [
+  "https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js",
+  "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"
+];
+
+function getPostcodeCtor(){
+  return (window.kakao && window.kakao.Postcode)
+      || (window.daum  && window.daum.Postcode)
+      || null;
+}
+
+let postcodeLoading = null;
+function loadPostcodeScript(){
+  if (getPostcodeCtor()) return Promise.resolve();
+  if (postcodeLoading) return postcodeLoading;
+  postcodeLoading = new Promise((resolve, reject) => {
+    let i = 0;
+    (function tryNext(){
+      if (i >= POSTCODE_URLS.length){
+        postcodeLoading = null;
+        return reject(new Error("postcode script load failed"));
+      }
+      const s = document.createElement("script");
+      s.src = POSTCODE_URLS[i++];
+      s.onload  = () => getPostcodeCtor() ? resolve() : tryNext();
+      s.onerror = tryNext;
+      document.head.appendChild(s);
+    })();
+  });
+  return postcodeLoading;
+}
+
+let manualAddrMode = false;
+function enableManualAddress(){
+  if (manualAddrMode) return;
+  manualAddrMode = true;
+  document.getElementById("recipientZip").readOnly = false;
+  document.getElementById("recipientAddr").readOnly = false;
+  document.getElementById("recipientAddr").placeholder = "주소를 직접 입력해주세요";
+  document.getElementById("addrSearch").style.display = "none";
+  addrNoticeEl.classList.add("show");
+}
+
+function closePostcodeLayer(){
+  pcLayer.style.display = "none";
+  pcDim.classList.remove("show");
+  pcEmbed.innerHTML = "";
+}
+
+function handleAddressSelected(data){
+  let fullAddr = data.userSelectedType === "R" ? data.roadAddress : data.jibunAddress;
+  if (!fullAddr) fullAddr = data.address;
+
+  if (data.userSelectedType === "R") {
+    let extra = "";
+    if (data.bname && /[동|로|가]$/g.test(data.bname)) extra += data.bname;
+    if (data.buildingName && data.apartment === "Y") {
+      extra += (extra !== "" ? ", " + data.buildingName : data.buildingName);
+    }
+    if (extra !== "") fullAddr += " (" + extra + ")";
+  }
+
+  document.getElementById("recipientZip").value = data.zonecode;
+  document.getElementById("recipientAddr").value = fullAddr;
+
+  closePostcodeLayer();
+  document.getElementById("recipientDetail").focus();
+}
+
+function embedPostcode(Ctor){
+  pcLayer.style.display = "block";
+  pcDim.classList.add("show");
+  new Ctor({
+    oncomplete: handleAddressSelected,
+    onresize: function(size){ pcEmbed.style.height = size.height + "px"; },
+    submitMode: false,
+    width: "100%",
+    height: "100%",
+    theme: { searchBgColor: "#111111", queryTextColor: "#FFFFFF" }
+  }).embed(pcEmbed);
+}
+
+function openPostcode(){
+  if (manualAddrMode) return;
+  const Ctor = getPostcodeCtor();
+  if (Ctor) { embedPostcode(Ctor); return; }
+  loadPostcodeScript()
+    .then(() => embedPostcode(getPostcodeCtor()))
+    .catch(() => {
+      enableManualAddress();
+      alert("주소 검색 서비스에 연결하지 못했습니다. 우편번호와 주소를 직접 입력해주세요.");
+    });
+}
+
+document.getElementById("postcodeClose").addEventListener("click", closePostcodeLayer);
+pcDim.addEventListener("click", closePostcodeLayer);
+document.getElementById("addrSearch").addEventListener("click", openPostcode);
+
+/* 읽기 전용 주소칸을 눌러도 검색창이 열리도록 */
+document.getElementById("destWrap").addEventListener("click", function(e){
+  if (manualAddrMode) return;
+  const t = e.target;
+  if (t.id === "recipientZip" || t.id === "recipientAddr") openPostcode();
+});
+
+loadPostcodeScript().catch(() => {
+  console.warn("[postcode] 사전 로드 실패 — 버튼 클릭 시 다시 시도합니다.");
+});
+
+/* =========================================================
+   전화번호 자동 하이픈
+========================================================= */
+const formatPhoneNumber = (value) => {
+  if (!value) return "";
+  value = value.replace(/[^0-9]/g, "");
+  if (value.startsWith("02")) {
+    if (value.length < 3) return value;
+    if (value.length < 6) return value.replace(/(\d{2})(\d{1,3})/, '$1-$2');
+    if (value.length < 10) return value.replace(/(\d{2})(\d{3})(\d{1,4})/, '$1-$2-$3');
+    return value.replace(/(\d{2})(\d{4})(\d{1,4})/, '$1-$2-$3');
+  } else {
+    if (value.length < 4) return value;
+    if (value.length < 7) return value.replace(/(\d{3})(\d{1,3})/, '$1-$2');
+    if (value.length < 11) return value.replace(/(\d{3})(\d{3})(\d{1,4})/, '$1-$2-$3');
+    return value.replace(/(\d{3})(\d{4})(\d{1,4})/, '$1-$2-$3');
+  }
+};
+
+document.addEventListener("input", function(e){
+  if (e.target.classList && e.target.classList.contains("phone-input")){
+    e.target.value = formatPhoneNumber(e.target.value);
+  }
+});
+
+/* =========================================================
+   검증 + 제출
+========================================================= */
+const form = document.getElementById("orderForm");
+const submitBtn = document.getElementById("submitBtn");
+let submitting = false;
+
+function buildSummary(totalQty, grand, totals){
+  const buyer = document.getElementById("buyerName").value.trim();
+  const email = document.getElementById("buyerEmail").value.trim();
+  const recipient = document.getElementById("recipientName").value.trim();
+  const phone = document.getElementById("recipientPhone").value.trim();
+  const zip = document.getElementById("recipientZip").value.trim();
+  const addr = document.getElementById("recipientAddr").value.trim();
+  const detail = document.getElementById("recipientDetail").value.trim();
+
+  return `주문번호: ${orderNo}
+주문자: ${buyer} (${email})
+총 ${totalQty}세트 (침구 세트 ${totals.bedding}세트, 베개 세트 ${totals.pillow}세트)
+총액: ${grand.toLocaleString()}원
+
+[주문 상품]
+침구 세트 ${totals.bedding}세트 = ${(totals.bedding * PRODUCTS.bedding.price).toLocaleString()}원
+베개 세트 ${totals.pillow}세트 = ${(totals.pillow * PRODUCTS.pillow.price).toLocaleString()}원
+
+[배송 정보]
+${recipient} / ${phone}
+(${zip}) ${addr} ${detail}`;
+}
+
+function validateForm(){
+  const { totalQty, grand, totals } = recalcTotal();
+
+  if (!document.getElementById("buyerName").value.trim()){
+    alert("주문자 이름을 입력해주세요.");
+    document.getElementById("buyerName").focus();
+    return false;
+  }
+
+  const email = document.getElementById("buyerEmail").value.trim();
+  if (!email){
+    alert("주문자 이메일을 입력해주세요.");
+    document.getElementById("buyerEmail").focus();
+    return false;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    alert("이메일 주소 형식을 확인해주세요.");
+    document.getElementById("buyerEmail").focus();
+    return false;
+  }
+
+  if (totalQty <= 0){
+    alert("상품을 1세트 이상 장바구니에 담아주세요.");
+    document.getElementById("cartSection").scrollIntoView({behavior:"smooth", block:"center"});
+    return false;
+  }
+
+  for (const product of Object.keys(PRODUCTS)){
+    if (totals[product] > PRODUCTS[product].max){
+      alert(`${PRODUCTS[product].label}의 한정 판매 수량을 초과했습니다. 수량을 조정해주세요.`);
+      return false;
+    }
+  }
+
+  const recipientName = document.getElementById("recipientName");
+  const recipientPhone = document.getElementById("recipientPhone");
+  const recipientZip = document.getElementById("recipientZip");
+  const recipientAddr = document.getElementById("recipientAddr");
+  const recipientDetail = document.getElementById("recipientDetail");
+  if (!recipientName.value.trim()){
+    alert("수취인 이름을 입력해주세요.");
+    recipientName.focus();
+    return false;
+  }
+  if (recipientPhone.value.replace(/[^0-9]/g, "").length < 9){
+    alert("수취인 전화번호를 다시 확인해주세요.");
+    recipientPhone.focus();
+    return false;
+  }
+  if (!recipientZip.value.trim() || !recipientAddr.value.trim()){
+    alert(manualAddrMode ? "우편번호와 주소를 입력해주세요." : "주소 찾기 버튼을 눌러 배송지 주소를 선택해주세요.");
+    return false;
+  }
+  if (!recipientDetail.value.trim()){
+    alert("상세주소를 입력해주세요.");
+    recipientDetail.focus();
+    return false;
+  }
+
+  const payPhone = document.getElementById("payPhone").value.replace(/[^0-9]/g, "");
+  if (!payPhone || payPhone.length < 9){
+    alert("결제 링크 받을 번호를 다시 확인해주세요.");
+    document.getElementById("payPhone").focus();
+    return false;
+  }
+
+  if (!document.getElementById("agreeCollect").checked) {
+    alert("개인정보 수집 및 이용에 동의해주세요.");
+    return false;
+  }
+
+  const summary = buildSummary(totalQty, grand, totals);
+  document.getElementById("orderSummaryInput").value = summary;
+  document.getElementById("totalAmountInput").value  = grand;
+  document.getElementById("totalQtyInput").value     = totalQty;
+  document.getElementById("totalBeddingInput").value = totals.bedding;
+  document.getElementById("totalPillowInput").value  = totals.pillow;
+
+  return confirm(summary + "\n\n주문 내용이 맞습니까?");
+}
+
+async function postOrder(url){
+  return fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams(new FormData(form)).toString(),
+    redirect: "manual"
+  });
+}
+
+function isAccepted(res){
+  return res.ok || res.type === "opaqueredirect" || res.status === 0
+      || (res.status >= 300 && res.status < 400);
+}
+
+form.addEventListener("submit", async function(e){
+  e.preventDefault();
+  if (submitting) return;
+  if (!validateForm()) return;
+
+  submitting = true;
+  submitBtn.disabled = true;
+  submitBtn.textContent = "제출 중입니다...";
+
+  let lastStatus = "network error";
+
+  try {
+    let res = await postOrder(window.location.pathname);
+    if (!isAccepted(res)) {
+      lastStatus = res.status;
+      console.error("[order] 1st attempt failed:", res.status, res.type);
+      res = await postOrder("/");
+    }
+    if (!isAccepted(res)) {
+      lastStatus = res.status;
+      throw new Error("status " + res.status);
+    }
+
+    try {
+      localStorage.setItem(LAST_ORDER_KEY, JSON.stringify({
+        orderNo: orderNo,
+        at: new Date().toLocaleString("ko-KR"),
+        summary: document.getElementById("orderSummaryInput").value
+      }));
+      sessionStorage.removeItem(ORDER_NO_KEY);
+    } catch(err){}
+
+    window.location.replace("/thanks/");
+
+  } catch (err) {
+    console.error("[order] submit failed:", lastStatus, err);
+    submitting = false;
+    submitBtn.disabled = false;
+    submitBtn.textContent = "주문서 제출하기";
+
+    const retry = confirm(
+      "주문서 접수에 실패했습니다. (코드: " + lastStatus + ")\n\n" +
+      "확인을 누르면 기본 방식으로 다시 제출합니다.\n" +
+      "계속 실패하면 신사업팀(02-559-7594)으로 연락 부탁드립니다."
+    );
+    if (retry){
+      submitting = true;
+      submitBtn.disabled = true;
+      form.submit();
+    }
+  }
+});
+
+window.addEventListener("pageshow", function(e){
+  if (e.persisted){
+    submitting = false;
+    submitBtn.disabled = false;
+    submitBtn.textContent = "주문서 제출하기";
+  }
+});
+
+</script>
+
+</body>
+</html>
